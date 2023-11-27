@@ -43,7 +43,7 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
 
-	/** Characters allowed in Asset Filenames */
+	/** Characters allowed in Asset Filenames. Any other Characters are invalid */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Characters allowed in Filename")
 	FString FilenameAllowedCharacters;
 #endif
