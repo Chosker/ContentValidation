@@ -30,12 +30,22 @@ public:
     UContentValidationSettings(const FObjectInitializer& obj);
 
 #if WITH_EDITORONLY_DATA
+	/** Folder Structure Tree where every subfolder starts with -
+	* Example:
+	* Maps
+	* -Game
+	* --Sublevels
+	* */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
-    FString FolderStructureRules;
+    FString FolderStructureTree;
 	
-	/** Naming Convention Class Name and Data */
-    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention")
+	/** Naming Convention Class Name and Prefix/Suffix Data */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
+
+	/** Characters allowed in Asset Filenames */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Characters allowed in Filename")
+	FString FilenameAllowedCharacters;
 #endif
 
 };
