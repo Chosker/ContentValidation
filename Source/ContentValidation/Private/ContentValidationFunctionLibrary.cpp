@@ -2,6 +2,7 @@
 
 
 #include "ContentValidationFunctionLibrary.h"
+#include "ContentValidationSettings.h"
 
 UClass* UContentValidationFunctionLibrary::GetParentClass(UClass* Class)
 {
@@ -22,3 +23,22 @@ EBlueprintType UContentValidationFunctionLibrary::GetBlueprintType(UBlueprint* B
 
     return EBlueprintType();
 }
+
+//FString UContentValidationFunctionLibrary::GetSettingTestVar()
+//{
+//    //void UOnaContentDBSubsystem::GetCriterionIdList(TArray<TCriterionDesc>&_CriterionIdList)
+//    //{
+//    //    if (auto ContentDBSettings = GetMutableDefault<UOnaContentDB_Settings>())
+//    //    {
+//    //        for (const auto& CriterionIt : ContentDBSettings->CriterionList)
+//    //        {
+//    //            _CriterionIdList.Add(TCriterionDesc(CriterionIt.Key, CriterionIt.Value));
+//    //        }
+//    //    }
+//    //}
+//
+//    if (auto ContentValidationSettings = GetMutableDefault<UContentValidationSettings>())
+//    {
+//        return ContentValidationSettings->TestVar;
+//    }
+//}
