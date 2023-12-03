@@ -30,7 +30,11 @@ public:
     UContentValidationSettings(const FObjectInitializer& obj);
 
 #if WITH_EDITORONLY_DATA
-	/** Folder Structure Tree where every subfolder starts with -
+	/** Characters allowed in Folder and Asset filenames. Any other characters are forbidden */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Allowed Characters in Folder and Filename")
+	FString AllowedCharacters;
+
+	/** Folder structure tree where every subfolder starts with '-'
 	* Example:
 	* Maps
 	* -Game
@@ -38,14 +42,14 @@ public:
 	* */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
     FString FolderStructureTree;
+
+	/** Comma-separated list of forbidden folder names */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
+	FString ForbiddenFolderNames;
 	
-	/** Naming Convention Class Name and Prefix/Suffix Data */
+	/** Naming convention Class name and prefix/suffix data */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
-
-	/** Characters allowed in Asset Filenames. Any other Characters are invalid */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Characters allowed in Filename")
-	FString FilenameAllowedCharacters;
 #endif
 
 };
