@@ -47,6 +47,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
 	FString ForbiddenFolderNames;
 	
+	/** Comma-separated list of Folders where Naming Convention is imposed */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", meta = (MultiLine = "true"))
+	FString NamingConventionWatchedFolders;
+
 	/** Naming convention Class name and prefix/suffix data */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
