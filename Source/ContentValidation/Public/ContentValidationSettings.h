@@ -34,6 +34,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Allowed Characters in Folder and Filename")
 	FString AllowedCharacters;
 
+	/** Enable Validation Rules for Folder Structure */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure")
+	bool ValidateFolderStructure;
+
 	/** Folder structure tree where every subfolder starts with '-'
 	* Example:
 	* Maps
@@ -47,7 +51,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
 	FString ForbiddenFolderNames;
 	
-	/** Comma-separated list of Folders where Naming Convention is imposed */
+	/** Enable Validation Rules for Naming Convention */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention")
+	bool ValidateNamingConvention;
+
+	/** Comma-separated list of Folders (at the root level, recursive) where Naming Convention is imposed */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", meta = (MultiLine = "true"))
 	FString NamingConventionWatchedFolders;
 
