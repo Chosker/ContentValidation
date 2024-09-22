@@ -20,7 +20,4 @@ class CONTENTVALIDATION_API UContentValidationFunctionLibrary : public UBlueprin
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		static EBlueprintType GetBlueprintType(UBlueprint* Blueprint);
 
-	//UFUNCTION(BlueprintCallable, BlueprintPure)
-	//	static FString GetSettingTestVar();
-
 };
