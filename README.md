@@ -1,1 +1,6 @@
 # ContentValidationPlugin
+
+DefaultEditorPerProjectUserSettings.ini
+
+[/Script/Blutility.EditorUtilitySubsystem]
++StartupObjects="/ContentValidation/EUB_ContentValidation_EditorMenu.EUB_ContentValidation_EditorMenu"
