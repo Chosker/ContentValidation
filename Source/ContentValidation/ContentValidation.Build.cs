@@ -26,6 +26,8 @@ public class ContentValidation : ModuleRules
 			new string[]
 			{
 				"Core",
+                "RenderCore", // Needed for AddShaderSourceDirectoryMapping & ResetAllShaderSourceDirectoryMappings
+                "Projects" // Needed for IPluginManager
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

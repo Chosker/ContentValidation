@@ -1,0 +1,190 @@
+/*=============================================================================
+	MiniFontCommon.usf: TinyFont shared functions and structures.
+=============================================================================*/
+
+//#pragma once
+
+#define NATIVE_CHARACTER_RES 8
+
+// Sub-set of ASCII characters for writing withing shader
+#define _0_ 0
+#define _A_ 10
+#define _B_ 11
+#define _C_ 12
+#define _D_ 13
+#define _E_ 14
+#define _F_ 15
+#define _G_ 16
+#define _H_ 17
+#define _I_ 18
+#define _J_ 19
+#define _K_ 20
+#define _L_ 21
+#define _M_ 22
+#define _N_ 23
+#define _O_ 24
+#define _P_ 25
+#define _Q_ 26
+#define _R_ 27
+#define _S_ 28
+#define _T_ 29
+#define _U_ 30
+#define _V_ 31
+#define _W_ 32
+#define _X_ 33
+#define _Y_ 34
+#define _Z_ 35
+#define _BOX_ 36
+#define _MINUS_ 59
+#define _COMMA_ 60
+#define _DOT_ 61
+#define _PLUS_ 62
+#define _SPC_ 63
+#define _NTR_ 64
+
+// sample from the MiniFont texture
+// @param CharacterID - the character to print
+// @param Position - the position within the 8x8 character
+float SampleMiniFont(Texture2D MiniFontTexture, int InAsciiCode, uint2 Position)
+{
+	// Limit ASCII character to the Standard character set (32 - 127)
+	//const uint TextureCode = clamp(InAsciiCode, 32, 127) - 32;
+	const uint TextureCode = InAsciiCode;
+	return MiniFontTexture.Load(int3(TextureCode * NATIVE_CHARACTER_RES + Position.x, Position.y, 0)).r;
+	//SamplerState 
+}
+
+// for printf debugging in the shader
+// @param LeftTop - is advanced, in pixels
+void PrintCharacter(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, inout int2 LeftTop, int CharacterID, int2 Cursor = 0)
+{
+	if (CharacterID == _NTR_)
+	{
+		LeftTop.x = Cursor.x;
+		LeftTop.y += NATIVE_CHARACTER_RES + 4;
+		return;
+	}
+
+	uint2 Rel = (uint2)(PixelPos - LeftTop);
+
+	// Background: black character as shadow
+	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES + 1) && Rel.y < (NATIVE_CHARACTER_RES + 1))
+	{
+		OutColor = lerp(OutColor, float3(0.0, 0.0, 0.0), SampleMiniFont(MiniFontTexture, CharacterID, Rel - uint2(1, 1)));
+	}
+	// Foreground: colored character
+	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES) && Rel.y < (NATIVE_CHARACTER_RES))
+	{
+		OutColor = lerp(OutColor, FontColor, SampleMiniFont(MiniFontTexture, CharacterID, Rel));
+	}
+
+	LeftTop.x += NATIVE_CHARACTER_RES;
+}
+
+// only for positive numbers
+// @param DigitValue - e.g. 1 for frist digit before period, 10 for second, 0.1 for first digit behind period
+uint ExtractDigitFromFloat(float Number, float DigitValue)
+{
+	uint Temp = (uint)(Number / DigitValue);
+	return (Temp % 10) + _0_;
+}
+
+// for printf debugging in the shader, has to be positive
+// outputs a float number in the form: xxx.yyy
+// @param LeftTop - in pixels
+void PrintFloat(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, float Number)
+{
+	int2 Cursor = LeftTop;
+
+	// before period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 100));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1));
+	// period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, _DOT_);
+	// after period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 0.1));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 0.01));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 0.001));
+}
+
+// for printf debugging in the shader, has to be positive
+// outputs a float number in the form: xxx.yyy
+// @param LeftTop - in pixels
+void PrintFloatNoFraction(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, float Number)
+{
+	int2 Cursor = LeftTop;
+
+	// before period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10000));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1000));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 100));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1));
+}
+void PrintFloatNoFractionLarge(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, float Number)
+{
+	int2 Cursor = LeftTop;
+
+	// before period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 100000));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10000));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1000));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 100));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10));
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1));
+}
+void PrintFloatNoFraction(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, float Number, uint DigitCount)
+{
+	int2 Cursor = LeftTop;
+
+	uint DigitValue = 1;
+	for (uint i = 0; i < DigitCount-1; ++i)
+	{
+		DigitValue *= 10;
+	}
+	for (uint j = 0; j < DigitCount; ++j)
+	{
+		PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, DigitValue));
+		DigitValue /= 10;
+	}
+}
+
+// for printf debugging in the shader, has to be positive (other abs is taken)
+// outputs a float number in the form: xx.yy
+// @param LeftTop - in pixels
+void PrintSmallFloat(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, float Number)
+{
+	Number = abs(Number) + 0.05; // Round up first digit
+	int2 Cursor = LeftTop;
+
+	// before period
+	FLATTEN
+	if (Number >= 10)
+	{
+		PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 10));
+	}
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 1));
+	// period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, _DOT_);
+	// after period
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(Number, 0.1));
+}
+
+void PrintSmallUint(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, int2 LeftTop, uint Number)
+{
+	int2 Cursor = LeftTop;
+	float FloatNumber = float(Number) + 0.05;
+
+	// before period
+	FLATTEN
+	if (Number >= 10)
+	{
+		PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(FloatNumber, 10));
+	}
+	PrintCharacter(MiniFontTexture, PixelPos, OutColor, FontColor, Cursor, ExtractDigitFromFloat(FloatNumber, 1));
+}
+
+#define P(ID)(PrintCharacter(Texture, PixelPos, OutColor, FontColor, LeftTop, ID));
+#define PCOL(ID, Color)(PrintCharacter(Texture, PixelPos, OutColor, Color, LeftTop, ID));
+#define ENTER()(PrintCharacter(Texture, PixelPos, OutColor, FontColor, LeftTop, _NTR_, int2(Cursor).xy));
