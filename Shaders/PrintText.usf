@@ -4,7 +4,7 @@
 
 //#pragma once
 
-#define NATIVE_CHARACTER_RES 8
+#define NATIVE_CHARACTER_RES 12
 
 // Sub-set of ASCII characters for writing withing shader
 #define _0_ 0
@@ -34,29 +34,71 @@
 #define _X_ 33
 #define _Y_ 34
 #define _Z_ 35
-#define _BOX_ 36
-#define _MINUS_ 59
-#define _COMMA_ 60
-#define _DOT_ 61
-#define _PLUS_ 62
-#define _SPC_ 63
-#define _NTR_ 64
+#define _a_ 36
+#define _b_ 37
+#define _c_ 38
+#define _d_ 39
+#define _e_ 40
+#define _f_ 41
+#define _g_ 42
+#define _h_ 43
+#define _i_ 44
+#define _j_ 45
+#define _k_ 46
+#define _l_ 47
+#define _m_ 48
+#define _n_ 49
+#define _o_ 50
+#define _p_ 51
+#define _q_ 52
+#define _r_ 53
+#define _s_ 54
+#define _t_ 55
+#define _u_ 56
+#define _v_ 57
+#define _w_ 58
+#define _x_ 59
+#define _y_ 60
+#define _z_ 61
+#define _QUESTION_ 62
+#define _EXCLAMATION_ 63
+#define _DOT_ 64
+#define _COMMA_ 65
+#define _COLON_ 66
+#define _LPARENTHESIS_ 67
+#define _RPARENTHESIS_ 68
+#define _LSQBRACKET_ 69
+#define _RSQBRACKET_ 70
+#define _PERCENT_ 71
+#define _AMPERSAND_ 72
+#define _UNDERSCORE_ 73
+#define _EQUAL_ 74
+#define _PLUS_ 75
+#define _MINUS_ 76
+#define _MUL_ 77
+#define _DIV_ 78
+#define _SLASH_ 79
+#define _BACKSLASH_ 80
+#define _GREATER_ 81
+#define _LESS_ 82
+#define _AT_ 83
+#define _BOX_ 84
+#define _SPC_ 85
+#define _NTR_ 86
 
 // sample from the MiniFont texture
 // @param CharacterID - the character to print
 // @param Position - the position within the 8x8 character
-float SampleMiniFont(Texture2D MiniFontTexture, int InAsciiCode, uint2 Position)
+float3 SampleMiniFont(Texture2D MiniFontTexture, int InAsciiCode, uint2 Position)
 {
-	// Limit ASCII character to the Standard character set (32 - 127)
-	//const uint TextureCode = clamp(InAsciiCode, 32, 127) - 32;
 	const uint TextureCode = InAsciiCode;
-	return MiniFontTexture.Load(int3(TextureCode * NATIVE_CHARACTER_RES + Position.x, Position.y, 0)).r;
+	return MiniFontTexture.Load(int3(TextureCode * NATIVE_CHARACTER_RES + Position.x, Position.y, 0)).rgb;
 	//SamplerState 
 }
 
 // for printf debugging in the shader
 // @param LeftTop - is advanced, in pixels
-void PrintCharacter(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutColor, float3 FontColor, inout int2 LeftTop, int CharacterID, int2 Cursor = 0)
+void PrintCharacter(Texture2D MiniFontTexture, int2 PixelPos, inout float4 OutColor, float3 FontColor, inout int2 LeftTop, int CharacterID, int2 Cursor = 0)
 {
 	if (CharacterID == _NTR_)
 	{
@@ -67,15 +109,26 @@ void PrintCharacter(Texture2D MiniFontTexture, int2 PixelPos, inout float3 OutCo
 
 	uint2 Rel = (uint2)(PixelPos - LeftTop);
 
+	/*
 	// Background: black character as shadow
-	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES + 1) && Rel.y < (NATIVE_CHARACTER_RES + 1))
+	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES + 2) && Rel.y < (NATIVE_CHARACTER_RES + 2))
 	{
-		OutColor = lerp(OutColor, float3(0.0, 0.0, 0.0), SampleMiniFont(MiniFontTexture, CharacterID, Rel - uint2(1, 1)));
+		OutColor = lerp(OutColor, float3(0.0, 0.0, 0.0), SampleMiniFont(MiniFontTexture, CharacterID, Rel - uint2(2, 2)));
 	}
 	// Foreground: colored character
 	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES) && Rel.y < (NATIVE_CHARACTER_RES))
 	{
 		OutColor = lerp(OutColor, FontColor, SampleMiniFont(MiniFontTexture, CharacterID, Rel));
+	}
+	*/
+
+	FLATTEN if (Rel.x < (NATIVE_CHARACTER_RES) && Rel.y < (NATIVE_CHARACTER_RES))
+	{
+		float2 SampledFont = SampleMiniFont(MiniFontTexture, CharacterID, Rel).rg;
+		// Background: outline
+		OutColor.a = lerp(OutColor.a, 1.0f, SampledFont.g);
+		// Foreground: colored character
+		OutColor.rgb = lerp(OutColor, FontColor, SampledFont.r);
 	}
 
 	LeftTop.x += NATIVE_CHARACTER_RES;
