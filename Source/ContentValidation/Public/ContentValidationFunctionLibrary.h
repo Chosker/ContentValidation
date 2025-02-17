@@ -15,9 +15,14 @@ class CONTENTVALIDATION_API UContentValidationFunctionLibrary : public UBlueprin
 	GENERATED_BODY()
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		static UClass* GetParentClass(UClass* Class);
+	static UClass* GetParentClass(UClass* Class);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		static EBlueprintType GetBlueprintType(UBlueprint* Blueprint);
+	static EBlueprintType GetBlueprintType(UBlueprint* Blueprint);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FString GetClassAssetDefinitionDisplayName(UClass* Class);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static void GetAssetTimeStamp(FString AssetPath, FDateTime& CreationTime, FDateTime& LastAccessTime, FDateTime& LastWriteTime);
 };

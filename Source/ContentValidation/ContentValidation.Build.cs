@@ -40,6 +40,8 @@ public class ContentValidation : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+                "DataValidation",
+				"AssetDefinition"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

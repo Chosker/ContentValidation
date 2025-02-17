@@ -3,6 +3,10 @@
 
 #include "ContentValidationFunctionLibrary.h"
 #include "ContentValidationSettings.h"
+#include "EditorValidatorBase.h"
+#include "DataValidationModule.h"
+#include "EditorValidatorHelpers.h"
+#include "AssetDefinitionRegistry.h"
 
 UClass* UContentValidationFunctionLibrary::GetParentClass(UClass* Class)
 {
@@ -24,4 +28,23 @@ EBlueprintType UContentValidationFunctionLibrary::GetBlueprintType(UBlueprint* B
     return EBlueprintType();
 }
 
+FString UContentValidationFunctionLibrary::GetClassAssetDefinitionDisplayName(UClass* Class)
+{
+    if (Class != nullptr)
+    {
+        const UAssetDefinition* AssetDefinition = UAssetDefinitionRegistry::Get()->GetAssetDefinitionForClass(Class);
+        if (AssetDefinition != nullptr)
+        {
+            return AssetDefinition->GetAssetDisplayName().ToString();
+        }
+    }
+    return FString(TEXT(""));
+}
 
+void UContentValidationFunctionLibrary::GetAssetTimeStamp(FString AssetPath, FDateTime& CreationTime, FDateTime& LastAccessTime, FDateTime& LastWriteTime)
+{
+    FFileStatData FileStatData = IFileManager::Get().GetStatData(*AssetPath);
+    CreationTime = FileStatData.CreationTime;
+    LastAccessTime = FileStatData.AccessTime;
+    LastWriteTime = FileStatData.ModificationTime;
+}

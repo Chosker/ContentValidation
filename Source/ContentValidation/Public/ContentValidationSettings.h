@@ -34,13 +34,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Allowed Characters in Folder and Filename")
 	FString AllowedCharacters;
 
-	/** Enable Validation Rules for Folder Structure */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Enable Validation")
-	bool ValidateFolderStructure;
+	/** Report any Validation Errors as Warnings */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Report Errors as Warnings")
+	bool ReportErrorsAsWarnings;
 
-	/** Report any Folder Structure Errors as Warnings */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Report Errors as Warnings")
-	bool ReportFolderStructureErrorsAsWarnings;
+	/** If Reporting Folder Structure Errors as Warnings, only do so for files Saved prior to this Date */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Report Errors as Warnings Prior to Date", meta = (EditCondition = "ReportErrorsAsWarnings"))
+	FDateTime ReportErrorsAsWarningsPriorToDate;
+
+	/** Enable Validation Rules for Folder Structure */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Enable Folder Structure Validation")
+	bool ValidateFolderStructure;
 
 	/** Folder structure tree where every subfolder starts with '-'
 	* Example:
@@ -56,12 +60,8 @@ public:
 	FString ForbiddenFolderNames;
 	
 	/** Enable Validation Rules for Naming Convention */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Enable Validation")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Enable Naming Convention Validation")
 	bool ValidateNamingConvention;
-
-	/** Report any Naming Convention Errors as Warnings */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Report Errors as Warnings")
-	bool ReportNamingConventionErrorsAsWarnings;
 
 	/** Comma-separated list of Folders (at the root level, recursive) where Naming Convention is imposed */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", meta = (MultiLine = "true"))
@@ -70,6 +70,14 @@ public:
 	/** Naming convention Class name and prefix/suffix data */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
+
+	/** Enable Validation Rules for Textures */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Textures", DisplayName = "Enable Power of 2 Texture Validation")
+	bool ValidatePow2Textures;
+
+	/** Enable Validation Rules for Textures */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Source File", DisplayName = "Enable Source Asset File Validation")
+	bool ValidateSourceFile;
 #endif
 
 };
