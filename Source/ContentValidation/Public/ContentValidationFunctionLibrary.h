@@ -25,4 +25,7 @@ class CONTENTVALIDATION_API UContentValidationFunctionLibrary : public UBlueprin
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static void GetAssetTimeStamp(FString AssetPath, FDateTime& CreationTime, FDateTime& LastAccessTime, FDateTime& LastWriteTime);
+
+	UFUNCTION(BlueprintCallable)
+    static void ShowValidationNotification(const FText& Message, const FText& SubText);
 };
