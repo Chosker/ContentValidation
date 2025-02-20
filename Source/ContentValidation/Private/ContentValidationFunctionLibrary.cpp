@@ -57,7 +57,7 @@ void UContentValidationFunctionLibrary::GetAssetTimeStamp(FString AssetPath, FDa
 //static TWeakPtr<SNotificationItem> ValidationNotificationPtr;
 //#endif
 
-void UContentValidationFunctionLibrary::ShowValidationNotification(const FText& Message, const FText& SubText)
+void UContentValidationFunctionLibrary::ShowValidationNotification(const FText& Message, const FText& SubText, const FString& HyperlinkURL, const FText& HyperlinkText)
 {
     /** Utility functions for the notification */
     //struct Local
@@ -81,8 +81,17 @@ void UContentValidationFunctionLibrary::ShowValidationNotification(const FText& 
     Info.bFireAndForget = true;
     Info.FadeOutDuration = 1.0f;
     //Info.ExpireDuration = 0.0f;
-    Info.ExpireDuration = 15.0f;
+    Info.ExpireDuration = 20.0f;
     //Info.ButtonDetails.Add(FNotificationButtonInfo(LOCTEXT("OK", "OK"), FText::GetEmpty(), FSimpleDelegate::CreateStatic(&Local::OnNotificationDismissed), SNotificationItem::CS_Fail));
+
+	if (!HyperlinkURL.IsEmpty() && !HyperlinkText.IsEmpty())
+	{
+        Info.HyperlinkText = HyperlinkText;
+        Info.Hyperlink = FSimpleDelegate::CreateLambda([HyperlinkURL]()
+        {
+			FPlatformProcess::LaunchURL(*HyperlinkURL, nullptr, nullptr);
+        });
+	}
 
     //ValidationNotificationPtr = FSlateNotificationManager::Get().AddNotification(Info);
     //ValidationNotificationPtr.Pin()->SetCompletionState(SNotificationItem::CS_Fail);

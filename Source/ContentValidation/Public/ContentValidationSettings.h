@@ -58,6 +58,12 @@ public:
 	/** Comma-separated list of forbidden folder names */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", meta = (MultiLine = "true"))
 	FString ForbiddenFolderNames;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Notification Hyperlink Message")
+    FText FolderStructureNotificationHyperlinkLabel;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Notification Hyperlink URL")
+	FString FolderStructureNotificationHyperlinkURL;
 	
 	/** Enable Validation Rules for Naming Convention */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Enable Naming Convention Validation")
@@ -70,6 +76,12 @@ public:
 	/** Naming convention Class name and prefix/suffix data */
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Naming Convention Prefix and Suffix Rules")
     TMap<FString, FNamingConventionData> NamingConventionRules;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Notification Hyperlink Message")
+    FText NamingConventionNotificationHyperlinkLabel;
+
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Naming Convention", DisplayName = "Notification Hyperlink URL")
+    FString NamingConventionNotificationHyperlinkURL;
 
 	/** Enable Validation Rules for Textures */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Textures", DisplayName = "Enable Power of 2 Texture Validation")
