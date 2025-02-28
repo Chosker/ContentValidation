@@ -7,6 +7,7 @@
 #include "DataValidationModule.h"
 #include "EditorValidatorHelpers.h"
 #include "AssetDefinitionRegistry.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
 
@@ -51,6 +52,33 @@ void UContentValidationFunctionLibrary::GetAssetTimeStamp(FString AssetPath, FDa
     CreationTime = FileStatData.CreationTime;
     LastAccessTime = FileStatData.AccessTime;
     LastWriteTime = FileStatData.ModificationTime;
+}
+
+FAssetData UContentValidationFunctionLibrary::FindAssetData(const FString& AssetPath)
+{
+    /* TGuardValue<bool> UnattendedScriptGuard(GIsRunningUnattendedScript, true);
+
+    if (!UE::EditorAssetUtils::EnsureAssetsLoaded())
+    {
+        return FAssetData();
+    }*/
+
+    /*auto AssetDataResult = UE::EditorAssetUtils::FindAssetDataFromAnyPath(AssetPath);
+    if (AssetDataResult.HasError())
+    {
+        UE_LOG(LogEditorAssetSubsystem, Error, TEXT("FindAssetData failed: %s"), *AssetDataResult.GetError());
+        return FAssetData();
+    }
+    return AssetDataResult.GetValue();*/
+
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    FAssetData AssetData = AssetRegistryModule.Get().GetAssetByObjectPath(FSoftObjectPath(AssetPath));
+    if (!AssetData.IsValid())
+    {
+        return FAssetData();
+    }
+
+    return AssetData;
 }
 
 //#if PLATFORM_WINDOWS
