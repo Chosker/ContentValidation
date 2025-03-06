@@ -10,6 +10,12 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "AssetDefinition.h"
+#include "ISourceControlProvider.h"
+#include "ISourceControlModule.h"
+#include "ISourceControlState.h"
+#include "SourceControlOperations.h"
+#include "SourceControlHelpers.h"
 
 #define LOCTEXT_NAMESPACE "ContentValidation"
 
@@ -125,4 +131,45 @@ void UContentValidationFunctionLibrary::ShowValidationNotification(const FText& 
     //ValidationNotificationPtr.Pin()->SetCompletionState(SNotificationItem::CS_Fail);
 
 	FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Fail);
+}
+
+FRevisionInfo UContentValidationFunctionLibrary::GetAssetBaseRevision(const FString& PackageName, const FString& AssetName)
+{
+    ISourceControlProvider& SourceControlProvider = ISourceControlModule::Get().GetProvider();
+
+    TSharedRef<FUpdateStatus, ESPMode::ThreadSafe> UpdateStatusOperation = ISourceControlOperation::Create<FUpdateStatus>();
+    UpdateStatusOperation->SetUpdateHistory(true);
+    SourceControlProvider.Execute(UpdateStatusOperation, SourceControlHelpers::PackageFilename(PackageName));
+    FSourceControlStatePtr SourceControlState = SourceControlProvider.GetState(SourceControlHelpers::PackageFilename(PackageName), EStateCacheUsage::Use);
+    if (SourceControlState.IsValid() && SourceControlState->IsSourceControlled() && FPackageName::DoesPackageExist(PackageName))
+    {
+		ISourceControlState const& SourceControlStateRef = *SourceControlState;
+        if (SourceControlStateRef.GetHistorySize() > 0)
+        {
+			TSharedPtr<class ISourceControlRevision, ESPMode::ThreadSafe> BaseRev = SourceControlStateRef.GetHistoryItem(0);
+			return { BaseRev.Get()->GetRevision(), BaseRev.Get()->GetCheckInIdentifier(), BaseRev.Get()->GetDate() };
+			/* const ISourceControlState::FResolveInfo ResolveInfo = SourceControlStateRef.GetResolveInfo();
+			if (ResolveInfo.IsValid())
+			{
+				const FSourceControlStatePtr BaseBranch = SourceControlProvider.GetState(ResolveInfo.BaseFile, EStateCacheUsage::Use);
+				if (BaseBranch.IsValid())
+				{
+					const TSharedPtr<ISourceControlRevision, ESPMode::ThreadSafe> Revision = BaseBranch->FindHistoryRevision(ResolveInfo.BaseRevision);
+					if (Revision.IsValid())
+					{
+						ISourceControlRevision const& FromRevision = *Revision;
+						return { FromRevision.GetRevision(), FromRevision.GetCheckInIdentifier(), FromRevision.GetDate() };
+					}
+				}
+			}*/
+        }
+        else
+        {
+			// no history means it's a new file, return 'now'
+            return { TEXT(""), -1, FDateTime::UtcNow() };
+        }
+
+    }
+
+    return FRevisionInfo::InvalidRevision();
 }

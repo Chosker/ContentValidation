@@ -31,4 +31,7 @@ class CONTENTVALIDATION_API UContentValidationFunctionLibrary : public UBlueprin
 
 	UFUNCTION(BlueprintCallable)
     static void ShowValidationNotification(const FText& Message, const FText& SubText, const FString& HyperlinkURL, const FText& HyperlinkText);
+
+	UFUNCTION(BlueprintCallable)
+    static FRevisionInfo GetAssetBaseRevision(const FString& PackageName, const FString& AssetName);
 };
