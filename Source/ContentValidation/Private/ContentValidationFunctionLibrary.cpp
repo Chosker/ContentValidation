@@ -133,7 +133,7 @@ void UContentValidationFunctionLibrary::ShowValidationNotification(const FText& 
 	FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Fail);
 }
 
-FRevisionInfo UContentValidationFunctionLibrary::GetAssetBaseRevision(const FString& PackageName, const FString& AssetName)
+FRevisionInfo UContentValidationFunctionLibrary::GetAssetBaseRevision(const FString& PackageName, const FString& AssetName, bool& IsSourceControlActive)
 {
     ISourceControlProvider& SourceControlProvider = ISourceControlModule::Get().GetProvider();
 
@@ -141,7 +141,15 @@ FRevisionInfo UContentValidationFunctionLibrary::GetAssetBaseRevision(const FStr
     UpdateStatusOperation->SetUpdateHistory(true);
     SourceControlProvider.Execute(UpdateStatusOperation, SourceControlHelpers::PackageFilename(PackageName));
     FSourceControlStatePtr SourceControlState = SourceControlProvider.GetState(SourceControlHelpers::PackageFilename(PackageName), EStateCacheUsage::Use);
-    if (SourceControlState.IsValid() && SourceControlState->IsSourceControlled() && FPackageName::DoesPackageExist(PackageName))
+    if (!SourceControlState.IsValid())
+	{
+        IsSourceControlActive = false;
+        // source control is disabled, return 'now'
+        return { TEXT(""), -1, FDateTime::UtcNow() };
+	}
+
+	IsSourceControlActive = true;
+	if (SourceControlState->IsSourceControlled() && FPackageName::DoesPackageExist(PackageName))
     {
 		ISourceControlState const& SourceControlStateRef = *SourceControlState;
         if (SourceControlStateRef.GetHistorySize() > 0)
@@ -168,8 +176,8 @@ FRevisionInfo UContentValidationFunctionLibrary::GetAssetBaseRevision(const FStr
 			// no history means it's a new file, return 'now'
             return { TEXT(""), -1, FDateTime::UtcNow() };
         }
-
     }
 
-    return FRevisionInfo::InvalidRevision();
+    // file isn't source-controlled, return 'now'
+    return { TEXT(""), -1, FDateTime::UtcNow() };
 }
