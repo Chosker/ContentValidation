@@ -38,9 +38,13 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Report Errors as Warnings")
 	bool ReportErrorsAsWarnings;
 
-	/** If Reporting Folder Structure Errors as Warnings, only do so for files Saved prior to this Date */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Report Errors as Warnings Prior to Date", meta = (EditCondition = "ReportErrorsAsWarnings"))
-	FDateTime ReportErrorsAsWarningsPriorToDate;
+	/** Enable skipping validation of files submitted before a specific date */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Skip Validating Files Prior to Date")
+    bool SkipFilesPriorToDate;
+
+	/** If skipping files prior to date is enabled, the Date used to compare against */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", DisplayName = "Skip Validation Submit Date", meta = (EditCondition = "SkipFilesPriorToDate"))
+	FDateTime SkipFilesDate;
 
 	/** Enable Validation Rules for Folder Structure */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Folder Structure", DisplayName = "Enable Folder Structure Validation")
